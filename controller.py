@@ -9,9 +9,14 @@ args=parser.parse_args()
 
 
 if __name__ == "__main__":
-    sp=model.SongfileParser(args.chordfile)
-    sp.parseFile(args.format)
-    if not song.error:
-        view.plotSong(song)
-    else:
-        print(song.error)
+    try:
+        sp=model.SongfileParser(args.chordfile)
+        song=sp.parseFile(args.format)
+    except KeyError as e:
+        print(e)
+    
+    try:
+        plotter=view.ChordPlotter(song)
+        plotter.plot()
+    except Exception as e:
+        raise e

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum,auto
-from typing import List
+from typing import List, Optional
 
 
 class ChordRoot(Enum):
@@ -34,10 +34,14 @@ class SectionType(Enum):
 class Chord():
     chordRoot: str
     chordType: str
+    fifthsToKey:Optional[int]
 
-class Section:
-    sectionType:str
-    chords:List[Chord]
+@dataclass
+class Section():
+    sectionType: str
+    chords: List[Chord]
 
+@dataclass
 class Song:
     sections:List[Section]
+    key: str
