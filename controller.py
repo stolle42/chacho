@@ -12,8 +12,8 @@ if __name__ == "__main__":
     try:
         sp=model.SongfileParser(args.chordfile)
         song=sp.parseFile(args.format)
-    except KeyError as e:
-        print(e)
+    except Exception as e:
+        raise e
     
     try:
         plotter=view.ChordPlotter(song)

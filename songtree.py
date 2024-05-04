@@ -1,3 +1,4 @@
+from pydantic import validate_arguments
 from dataclasses import dataclass
 from enum import Enum,auto
 from typing import List, Optional
@@ -34,14 +35,15 @@ class SectionType(Enum):
 class Chord():
     chordRoot: str
     chordType: str
-    fifthsToKey:Optional[int]
+    fifthsToKey:Optional[int]=None
 
 @dataclass
 class Section():
     sectionType: str
     chords: List[Chord]
 
+@validate_arguments
 @dataclass
 class Song:
     sections:List[Section]
-    key: str
+    key: Chord
