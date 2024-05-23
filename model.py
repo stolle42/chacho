@@ -17,7 +17,7 @@ class SongfileParser():
         self.circleOfFifths=CircleOfFifths(self.key)
         
     def divideIntoSections(self ):
-        pattern=re.compile(r"\{comment: ([\w -]+)\}\n(.*?)\n\n",re.DOTALL)
+        pattern=re.compile(r"\{comment: ([\w &-]+)\}\n(.*?)\n\n",re.DOTALL)
         self.sections=pattern.findall(self.songtext)
     
     def _getSectionChords(self, sectionText:str):

@@ -19,8 +19,9 @@ class ChordPlotter():
     def plot(self):
         fig=plt.figure()
         sectionCount=len(self.songTree.sections)
-        columns=min(sectionCount,2)
-        rows=(sectionCount+1)//2
+        columns=1+(sectionCount>2)
+        rows=(sectionCount+1)//2+(sectionCount==2)
+        plotColor='red' if self.songTree.key.chordType=='major' else 'blue'
         for (i,section) in enumerate(self.songTree.sections):
             ax=plt.subplot(rows, columns,i+1)
             distances=list(map((lambda chord: chord.fifthsToKey),section.chords))
@@ -30,10 +31,7 @@ class ChordPlotter():
             ax.set_yticks(range(minChord,maxChord+1))
             ax.set_yticklabels(sectionChords)
             ax.set_title(section.sectionType)
-            ax.plot(distances, color='red',zorder=1)
+            ax.plot(distances, color=plotColor,zorder=1)
             ax.scatter(range(len(distances)),distances,c=colors,zorder=2)
         plt.tight_layout()
         fig.savefig("progression.png")
-        # fig.close()
-            
-    
