@@ -34,7 +34,8 @@ class SectionType(Enum):
 @dataclass
 class Chord():
     chordRoot: str
-    chordType: str
+    major: bool
+    extend: str
     fifthsToKey:Optional[int]=None
 
 @dataclass

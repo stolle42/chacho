@@ -8,20 +8,23 @@ class ChordPlotter():
         self.cof=CircleOfFifths(songTree.key)
         
     def visualizeChord(self, chord:Chord):
-        visualization={
-            'major':'red',
-            'minor':'blue',
-            'dominant':'orange',
-            'sus4':'green',
-        }
-        return  visualization[chord.chordType]
+        if chord.major:
+            if chord.extend:
+                return 'orange'
+            else:
+                return 'red'
+        else:
+            if chord.extend:
+                return 'purple'
+            else:
+                return 'blue'
     
     def plot(self):
         fig=plt.figure()
         sectionCount=len(self.songTree.sections)
         columns=1+(sectionCount>2)
         rows=(sectionCount+1)//2+(sectionCount==2)
-        plotColor='red' if self.songTree.key.chordType=='major' else 'blue'
+        plotColor='red' if self.songTree.key.major else 'blue'
         for (i,section) in enumerate(self.songTree.sections):
             ax=plt.subplot(rows, columns,i+1)
             distances=list(map((lambda chord: chord.fifthsToKey),section.chords))

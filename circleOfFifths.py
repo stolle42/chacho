@@ -34,7 +34,7 @@ class CircleOfFifths:
         uses the key C. if not, we need to shift our circle. 
         """
         shiftToC=self.fifths.index(self.key.chordRoot)
-        if self.key.chordType=="minor":
+        if not self.key.major:
             shiftToC+=self.minorMajorShift
         self.fifths.rotate(-shiftToC)
       

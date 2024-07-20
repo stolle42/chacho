@@ -1,11 +1,17 @@
 from enum import Enum
 import re
 
+
 def parse(chord:str):
-    pattern=re.compile(r'(?P<base>\w)(?P<semi>[#b]?)(?P<quality>m?)')
+    pattern=re.compile(r'(?P<base>.)(?P<semi>[#b]?)(?P<quality>m?)(?P<extension>[47]?)')
     ret=pattern.match(chord)
-    d=ret.groupdict()
-    pass
+    subgroups=ret.groupdict()
+    
+    note=Note(subgroups['base'], subgroups['semi'])
+    isMinor=subgroups['quality']=='m'
+    extension=subgroups['extension']
+    
+    return Chord(root=note,major=not isMinor,extend=extension)
 
 class Extension(Enum):
     """enum for all possible suspended or extended chords"""
@@ -17,25 +23,49 @@ class Extension(Enum):
     
     
 
-class Note(Enum):
-    """all of the 12 base notes"""
-    C='C'
-    G='G'
-    D='D'
-    A='A'
-    E='E'
-    B='B'
-    Gb='Gb'
-    Db='Db'
-    Ab='Ab'
-    Eb='Eb'
-    Bb='Bb'
-    F='F'
+class Note:
+    """generates a note in a standard format regardless of
+    whether it was provided with # or. Its string representation is 
+    one of the 12 base self.notes (or empty string in case of failure)
 
+    Args:
+        base (str): base without semitone
+        semi (str): # or b, depending on down or up shift. If left empty: no shift
+    """
+    def __init__(self, base:str, semi:str=''):
+        self.notes=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B']
+        self.noteStr=''#this is supposed to be overwritten
+        self.error=False
+        if base in self.notes:
+            self._makeNoteString(base,semi)
+        else:
+            self._error(f'Note {base} was not recognized!')            
+    
+    def _makeNoteString(self, base:str, semi:str):
+        shifter={'#':1,'':0,'b':-1}
+        if semi in shifter:
+            newIdx=self.notes.index(base)+shifter[semi]
+            self.noteStr=self.notes[newIdx%12]#more than 12 notes is not possible
+        else:
+            self._error(f'Note parse error - semitone must be # or b or empty, but was "{semi}"')        
+    
+    def _error(self, message:str):
+        """if anything goes wrong, empty string will be saved and
+        the error message printed out
+        """
+        print(message)
+        self.error=True
+        
+    def __str__(self) -> str:
+        if self.error:
+            return ''
+        else:
+            return self.noteStr
+    
 class Chord:
     """guitar Chord"""
-    def __init__(self, base:Note,major:bool=True,extend:Extension=None):
-        self.base:Note = base
+    def __init__(self, root:Note,major:bool=True,extend:Extension=None):
+        self.root:Note = root
         self.major:bool = major
         self.extend:Extension = extend
         
@@ -47,3 +77,4 @@ if __name__ == "__main__":
     c=parse('C#m')
     c=parse('E7')
     c=parse('C#m7')
+    c=parse('-')

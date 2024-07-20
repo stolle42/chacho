@@ -1,6 +1,7 @@
 import re
 from typing import Tuple
 import chordparser
+import chachoParser as cc
 
 from circleOfFifths import CircleOfFifths
 from songtree import Chord, Section, Song
@@ -26,12 +27,10 @@ class SongfileParser():
         return list(map(self._parseChordWithDistance,chordStrings))
     
     def _getKeyDistance(self, chord:Chord):
-        if chord.chordType in ["major","sus4","dominant"]:
+        if chord.major:
             return self.circleOfFifths.majorMap[chord.chordRoot]
-        elif chord.chordType=="minor":
-            return self.circleOfFifths.minorMap[chord.chordRoot]
         else:
-            raise ValueError("type must be either major or minor")
+            return self.circleOfFifths.minorMap[chord.chordRoot]
             
     def _parseChordWithDistance(self, chordStr:str):
         """adds fifth distance to the already parsed chord
@@ -47,16 +46,14 @@ class SongfileParser():
         chord object which can be inserted in the tree
         fifths-distance is not calculated in this method
         """
-        chord=self.ce.create_chord(chordStr)
-        root=chord.root.value
-        type=chord.quality.value
-        return Chord(root,type)
+        chord=cc.parse(chordStr)
+        return Chord(str(chord.root),chord.major, chord.extend)
     
     def parseSection(self,section:Tuple[str,str]):
         sectionType,sectionText=section
         #remove chords the parser cannot understand
-        sectionText=sectionText.replace('[|]','')
-        sectionText=re.sub(r'[\(\)]','',sectionText)
+        sectionText=re.sub(r'[\(\)\|\.]','',sectionText)
+        sectionText=sectionText.replace('[]','')
         #extract chords from text
         chords=self._getSectionChords(sectionText)
         return Section(sectionType, chords)
