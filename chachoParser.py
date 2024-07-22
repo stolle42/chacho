@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+from songtree import Chord
 
 
 def parse(chord:str):
@@ -10,8 +11,10 @@ def parse(chord:str):
     note=Note(subgroups['base'], subgroups['semi'])
     isMinor=subgroups['quality']=='m'
     extension=subgroups['extension']
-    
-    return Chord(root=note,major=not isMinor,extend=extension)
+    if note.error:
+        return Chord(chordRoot='err',major=True,extend='err',error=True)
+    else:
+        return Chord(chordRoot=str(note),major=not isMinor,extend=extension)
 
 class Extension(Enum):
     """enum for all possible suspended or extended chords"""
@@ -61,13 +64,7 @@ class Note:
             return ''
         else:
             return self.noteStr
-    
-class Chord:
-    """guitar Chord"""
-    def __init__(self, root:Note,major:bool=True,extend:Extension=None):
-        self.root:Note = root
-        self.major:bool = major
-        self.extend:Extension = extend
+
         
 if __name__ == "__main__":
     c=parse('F')

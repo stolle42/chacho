@@ -1,6 +1,5 @@
 import re
 from typing import Tuple
-import chordparser
 import chachoParser as cc
 
 from circleOfFifths import CircleOfFifths
@@ -13,9 +12,9 @@ class SongfileParser():
     def __init__(self, chordFilePath):
         with open(chordFilePath, 'r') as cd:
             self.songtext=cd.read()
-        self.ce=chordparser.ChordEditor()
         self._parseKey()
         self.circleOfFifths=CircleOfFifths(self.key)
+        self.maxSections=8
         
     def divideIntoSections(self ):
         pattern=re.compile(r"\{comment: ([\w &-]+)\}\n(.*?)\n\n",re.DOTALL)
@@ -24,7 +23,7 @@ class SongfileParser():
     def _getSectionChords(self, sectionText:str):
         pattern=re.compile(r"\[(.*?)\]")
         chordStrings=pattern.findall(sectionText)
-        return list(map(self._parseChordWithDistance,chordStrings))
+        return map(self._parseChordWithDistance,chordStrings)
     
     def _getKeyDistance(self, chord:Chord):
         if chord.major:
@@ -35,37 +34,39 @@ class SongfileParser():
     def _parseChordWithDistance(self, chordStr:str):
         """adds fifth distance to the already parsed chord
         """
-        chord=self._parseChord(chordStr)
-        chord.fifthsToKey=self._getKeyDistance(chord)
+        chord=cc.parse(chordStr)
+        if not chord.error:
+            chord.fifthsToKey=self._getKeyDistance(chord)
         return chord
         
         
     
-    def _parseChord(self, chordStr:str)->Chord:
-        """convert chord string (e.g. A, Em, Bb) to a 
-        chord object which can be inserted in the tree
-        fifths-distance is not calculated in this method
-        """
-        chord=cc.parse(chordStr)
-        return Chord(str(chord.root),chord.major, chord.extend)
+    # def _parseChord(self, chordStr:str)->Chord:
+    #     """convert chord string (e.g. A, Em, Bb) to a 
+    #     chord object which can be inserted in the tree
+    #     fifths-distance is not calculated in this method
+    #     """
+    #     chord=cc.parse(chordStr)
+    #     return Chord(str(chord.root),chord.major, chord.extend)
     
     def parseSection(self,section:Tuple[str,str]):
         sectionType,sectionText=section
-        #remove chords the parser cannot understand
+        #remove chords the parser cannot understand TODO: remove
         sectionText=re.sub(r'[\(\)\|\.]','',sectionText)
         sectionText=sectionText.replace('[]','')
         #extract chords from text
         chords=self._getSectionChords(sectionText)
+        chords=list(filter(lambda c:not c.error, chords))
         return Section(sectionType, chords)
     
     def _parseKey(self):
         pattern=re.compile("{key: (\w+)}")
         (key_str,)=pattern.findall(self.songtext)
-        self.key=self._parseChord(key_str)
+        self.key=cc.parse(key_str)
     
     def parseFile(self,format:str):
         if format=='ccli':
             self.divideIntoSections()
-            sectionsTree=list(map(self.parseSection,self.sections))
+            sectionsTree=list(map(self.parseSection,self.sections[:self.maxSections]))
             return Song(sections=sectionsTree, key=self.key)
         

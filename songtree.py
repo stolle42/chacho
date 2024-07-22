@@ -36,6 +36,7 @@ class Chord():
     chordRoot: str
     major: bool
     extend: str
+    error: bool=False
     fifthsToKey:Optional[int]=None
 
 @dataclass
