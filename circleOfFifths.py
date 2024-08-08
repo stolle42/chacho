@@ -11,7 +11,7 @@ class CircleOfFifths:
     def __init__(self, key:Chord):
         self.key=key
         #basic music theory
-        self.fifths=deque(['C', 'G', 'D', 'A', 'E', 'B', 'F♯', 'C♯', 'G♯', 'D♯', 'A♯', 'F'])
+        self.fifths=deque(['C', 'G', 'D', 'A', 'E', 'B', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F'])
         self.minorMajorShift=-3
         #shift key to center of the queue
         self.shiftKeyToHead()
