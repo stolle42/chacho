@@ -4,7 +4,7 @@ from songtree import Chord, Song
 class ChordPlotter():
     """gets chords in tree-form and plots them"""
     def __init__(self, songTree:Song):
-        self.songTree = songTree
+        self.songTree:Song = songTree
         self.cof=CircleOfFifths(songTree.key)
         
     def visualizeChord(self, chord:Chord):
@@ -37,4 +37,4 @@ class ChordPlotter():
             ax.plot(distances, color=plotColor,zorder=1)
             ax.scatter(range(len(distances)),distances,c=colors,zorder=2)
         plt.tight_layout()
-        fig.savefig("progression.png")
+        fig.savefig(self.songTree.title)

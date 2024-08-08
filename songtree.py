@@ -49,3 +49,4 @@ class Section():
 class Song:
     sections:List[Section]
     key: Chord
+    title: str

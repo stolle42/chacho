@@ -13,6 +13,7 @@ class SongfileParser():
         with open(chordFilePath, 'r') as cd:
             self.songtext=cd.read()
         self._parseKey()
+        self._parseTitle()
         self.circleOfFifths=CircleOfFifths(self.key)
         self.maxSections=8
         
@@ -60,13 +61,19 @@ class SongfileParser():
         return Section(sectionType, chords)
     
     def _parseKey(self):
-        pattern=re.compile("{key: (\w+)}")
-        (key_str,)=pattern.findall(self.songtext)
-        self.key=cc.parse(key_str)
+        pattern=re.compile(r"{key: (\w+)}")
+        (self.key_str,)=pattern.findall(self.songtext)
+        self.key=cc.parse(self.key_str)
+    
+    def _parseTitle(self):
+        pattern=re.compile(r"{title: (.+)?}")
+        (self.title,)=pattern.findall(self.songtext)
+        
+    
     
     def parseFile(self,format:str):
         if format=='ccli':
             self.divideIntoSections()
             sectionsTree=list(map(self.parseSection,self.sections[:self.maxSections]))
-            return Song(sections=sectionsTree, key=self.key)
+            return Song(sections=sectionsTree, key=self.key, title=self.title+'-'+self.key_str)
         
