@@ -18,18 +18,18 @@ class ChordRoot(Enum):
     Bb=auto()
     B=auto()
 
-class ChordType(Enum):
-    Major=auto()
-    Minor=auto()
-    DominantSeventh=auto()
-    MajorSeventh=auto()
-    MinorSeventh=auto()
+# class ChordType(Enum):
+#     Major=auto()
+#     Minor=auto()
+#     DominantSeventh=auto()
+#     MajorSeventh=auto()
+#     MinorSeventh=auto()
     
-class SectionType(Enum):
-    Verse=auto()
-    Chorus=auto()
-    Bridge=auto()
-    Tag=auto()
+# class SectionType(Enum):
+#     Verse=auto()
+#     Chorus=auto()
+#     Bridge=auto()
+#     Tag=auto()
 
 @dataclass
 class Chord():

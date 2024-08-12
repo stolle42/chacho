@@ -14,8 +14,8 @@ class CircleOfFifths:
         self.fifths=deque(['C', 'G', 'D', 'A', 'E', 'B', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F'])
         self.minorMajorShift=-3
         #shift key to center of the queue
-        self.shiftKeyToHead()
-        self.shiftHeadToCenter()
+        self._shiftKeyToHead()
+        self._shiftHeadToCenter()
         #add minor scale analogous to major scale
         self.minorFifths=self.fifths.copy()
         self.minorFifths.rotate(self.minorMajorShift)
@@ -24,11 +24,11 @@ class CircleOfFifths:
         self.majorMap=dict(zip(self.fifths,self.distances))
         self.minorMap=dict(zip(self.minorFifths,self.distances))
 
-    def shiftHeadToCenter(self):
+    def _shiftHeadToCenter(self):
         self.centerIdx=len(self.fifths)//2
         self.fifths.rotate(self.centerIdx)
         
-    def shiftKeyToHead(self):
+    def _shiftKeyToHead(self):
         """The start of our circle of fifth must be the key.
         We defined our circle to start at C, but since not every song
         uses the key C. if not, we need to shift our circle. 
@@ -37,6 +37,12 @@ class CircleOfFifths:
         if not self.key.major:
             shiftToC+=self.minorMajorShift
         self.fifths.rotate(-shiftToC)
+
+    def getChordDistance(self, chord:Chord):
+        if chord.major:
+            return self.majorMap[chord.chordRoot]
+        else:
+            return self.minorMap[chord.chordRoot]
       
     def getScaleSection(self, minChord, maxChord):
         """

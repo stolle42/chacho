@@ -5,56 +5,30 @@ import chachoParser as cc
 from circleOfFifths import CircleOfFifths
 from songtree import Chord, Section, Song
 
-   
+'''
+TODO: chordproParser und ultimateParser die von songfileParser erben. alles spezifische auslagern.
+evtl. key nicht ablesen sondern chord durchschnitt berechnen (achtung bei 6/-6 ist natürlich nciht 0). Moll key?
+für ultimate parser evtl zeilen nur akzeptieren wenn er jedes wort parsen kann?
+'''   
 
 class SongfileParser():
     """gets a file and divides it into songtree objects"""
     def __init__(self, chordFilePath):
         with open(chordFilePath, 'r') as cd:
             self.songtext=cd.read()
-        self._parseKey()
-        self._parseTitle()
-        self.circleOfFifths=CircleOfFifths(self.key)
         self.maxSections=8
         
-    def divideIntoSections(self ):
+    def _divideIntoSections(self ):
         pattern=re.compile(r"\{comment: ([\w &-]+)\}\n(.*?)\n\n",re.DOTALL)
         self.sections=pattern.findall(self.songtext)
     
     def _getSectionChords(self, sectionText:str):
         pattern=re.compile(r"\[(.*?)\]")
         chordStrings=pattern.findall(sectionText)
-        return map(self._parseChordWithDistance,chordStrings)
-    
-    def _getKeyDistance(self, chord:Chord):
-        if chord.major:
-            return self.circleOfFifths.majorMap[chord.chordRoot]
-        else:
-            return self.circleOfFifths.minorMap[chord.chordRoot]
-            
-    def _parseChordWithDistance(self, chordStr:str):
-        """adds fifth distance to the already parsed chord
-        """
-        chord=cc.parse(chordStr)
-        if not chord.error:
-            chord.fifthsToKey=self._getKeyDistance(chord)
-        return chord
+        return map(cc.parse,chordStrings)
         
-        
-    
-    # def _parseChord(self, chordStr:str)->Chord:
-    #     """convert chord string (e.g. A, Em, Bb) to a 
-    #     chord object which can be inserted in the tree
-    #     fifths-distance is not calculated in this method
-    #     """
-    #     chord=cc.parse(chordStr)
-    #     return Chord(str(chord.root),chord.major, chord.extend)
-    
-    def parseSection(self,section:Tuple[str,str]):
+    def _parseSection(self,section:Tuple[str,str]):
         sectionType,sectionText=section
-        #remove chords the parser cannot understand TODO: remove
-        sectionText=re.sub(r'[\(\)\|\.]','',sectionText)
-        sectionText=sectionText.replace('[]','')
         #extract chords from text
         chords=self._getSectionChords(sectionText)
         chords=list(filter(lambda c:not c.error, chords))
@@ -73,7 +47,16 @@ class SongfileParser():
     
     def parseFile(self,format:str):
         if format=='ccli':
-            self.divideIntoSections()
-            sectionsTree=list(map(self.parseSection,self.sections[:self.maxSections]))
-            return Song(sections=sectionsTree, key=self.key, title=self.title+'-'+self.key_str)
-        
+            self._divideIntoSections()
+            self._parseKey()
+            self._parseTitle()
+            sectionsTree=list(map(self._parseSection,self.sections[:self.maxSections]))
+            return Song(sections=sectionsTree, key=self.key, title=self.title+'-'+self.key_str)\
+    
+def makeProgession(song:Song):
+    """adds the fifthToKey-property to all chords in Song"""
+    circleOfFifths=CircleOfFifths(song.key)
+    for section in song.sections:
+        for chord in section.chords:
+            chord.fifthsToKey=circleOfFifths.getChordDistance(chord)
+

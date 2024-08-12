@@ -12,6 +12,7 @@ if __name__ == "__main__":
     try:
         sp=model.SongfileParser(args.chordfile)
         song=sp.parseFile(args.format)
+        model.makeProgession(song)
     except Exception as e:
         raise e
     
