@@ -10,8 +10,13 @@ args=parser.parse_args()
 
 if __name__ == "__main__":
     try:
-        sp=model.SongfileParser(args.chordfile)
-        song=sp.parseFile(args.format)
+        if args.format=='ccli':
+            sp=model.SongfileParser(args.chordfile)
+        elif args.format=='chordpro':
+            sp=model.ChordproParser(args.chordfile)
+        else:
+            raise ValueError(f"Format {args.format} is not known!")
+        song=sp.parseFile()
         model.makeProgession(song)
     except Exception as e:
         raise e

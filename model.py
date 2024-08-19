@@ -11,6 +11,7 @@ evtl. key nicht ablesen sondern chord durchschnitt berechnen (achtung bei 6/-6 i
 für ultimate parser evtl zeilen nur akzeptieren wenn er jedes wort parsen kann?
 '''   
 
+
 class SongfileParser():
     """gets a file and divides it into songtree objects"""
     def __init__(self, chordFilePath):
@@ -45,13 +46,12 @@ class SongfileParser():
         
     
     
-    def parseFile(self,format:str):
-        if format=='ccli':
-            self._divideIntoSections()
-            self._parseKey()
-            self._parseTitle()
-            sectionsTree=list(map(self._parseSection,self.sections[:self.maxSections]))
-            return Song(sections=sectionsTree, key=self.key, title=self.title+'-'+self.key_str)\
+    def parseFile(self):
+        self._divideIntoSections()
+        self.sectionsTree=list(map(self._parseSection,self.sections[:self.maxSections]))
+        self._parseKey()
+        self._parseTitle()
+        return Song(sections=self.sectionsTree, key=self.key, title=self.title+'-'+self.key_str)\
     
 def makeProgession(song:Song):
     """adds the fifthToKey-property to all chords in Song"""
@@ -60,3 +60,20 @@ def makeProgession(song:Song):
         for chord in section.chords:
             chord.fifthsToKey=circleOfFifths.getChordDistance(chord)
 
+
+class ChordproParser(SongfileParser):
+    """input is file in chordpro format that was converted from ultimate
+    guitar by website"""
+    def __init__(self, chordFilePath):
+        super(ChordproParser, self).__init__(chordFilePath)
+        self.chordFilePath = chordFilePath
+    
+    def _divideIntoSections(self ):
+        pattern=re.compile(r"\{start_of_([\w &-]+)\}\n(.*?)\n\n",re.DOTALL)
+        self.sections=pattern.findall(self.songtext)
+    def _parseKey(self):
+        self.key=self.sectionsTree[0].chords[0]#questionable approach
+        self.key_str=''#even more questionable
+    
+    def _parseTitle(self):
+        self.title='songtitle'
