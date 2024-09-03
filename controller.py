@@ -14,6 +14,8 @@ if __name__ == "__main__":
             sp=model.SongfileParser(args.chordfile)
         elif args.format=='chordpro':
             sp=model.ChordproParser(args.chordfile)
+        elif args.format=='ultimate':
+            sp=model.UltimateGuitarParser(args.chordfile)
         else:
             raise ValueError(f"Format {args.format} is not known!")
         song=sp.parseFile()
