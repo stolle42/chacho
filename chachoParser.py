@@ -4,6 +4,7 @@ from songtree import Chord
 
 
 def parse(chord:str):
+    chord=chord.replace("maj","")#maj is removed, as maj7 is incorrectly recognized as minor by the regex
     pattern=re.compile(r'(?P<base>.)(?P<semi>[#b]?)(?P<quality>m?)(?P<extension>[47]?)')
     ret=pattern.match(chord)
     subgroups=ret.groupdict()
