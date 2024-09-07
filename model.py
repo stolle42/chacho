@@ -49,7 +49,9 @@ class SongfileParser():
     
     def parseFile(self):
         self._divideIntoSections()
-        self.sectionsTree=list(map(self._parseSection,self.sections))
+        self.sectionsTree=map(self._parseSection,self.sections)
+        #get rid of sections with no chords
+        self.sectionsTree=list(filter(lambda section: section.chords,self.sectionsTree))
         self._parseKey()
         self._parseTitle()
         return Song(sections=self.sectionsTree, key=self.key, title=self.title+'-'+self.key_str)\
