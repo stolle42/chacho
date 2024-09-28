@@ -24,7 +24,6 @@ if __name__ == "__main__":
         raise e
     
     try:
-        plotter=view.ChordPlotter(song)
-        plotter.plot()
+        view.plotAll(song)
     except Exception as e:
         raise e
