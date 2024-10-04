@@ -2,7 +2,7 @@ import re
 from typing import Tuple
 import chachoParser as cc
 import numpy as np
-
+from pathlib import Path
 from circleOfFifths import CircleOfFifths
 from songtree import Chord, Section, Song
 
@@ -18,7 +18,6 @@ class SongfileParser():
     def __init__(self, chordFilePath):
         with open(chordFilePath, 'r') as cd:
             self.songtext=cd.read()
-        self.maxSections=8
         
     def _divideIntoSections(self ):
         pattern=re.compile(r"\{comment: ([\w &-]+)\}\n(.*?)\n\n",re.DOTALL)
@@ -104,3 +103,18 @@ class UltimateGuitarParser(SongfileParser):
     def _parseTitle(self):
         self.title='songtitle'
        
+def parseChords(format:str,chordFileStr:str):
+    chordFile=Path(chordFileStr)
+    if not chordFile.exists():
+        raise FileNotFoundError(f"file {chordFileStr} does not exist!")
+    if format=='ccli':
+        sp=SongfileParser(chordFile)
+    elif format=='chordpro':
+        sp=ChordproParser(chordFile)
+    elif format=='ultimate':
+        sp=UltimateGuitarParser(chordFile)
+    else:
+        raise ValueError(f"Format {format} is not known!")
+    song=sp.parseFile()
+    makeProgession(song)
+    return song

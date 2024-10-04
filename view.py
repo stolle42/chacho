@@ -7,7 +7,7 @@ from itertools import batched
 def plotAll(songTree:Song, maxSection=8):
     if len(songTree.sections)>maxSection+2:
         for i, sectionSlice in enumerate(batched(songTree.sections, maxSection)):
-            song=Song(sectionSlice,songTree.key,f'{songTree.title}({i})')
+            song=Song(sectionSlice,songTree.key,f'{songTree.title}({i+1})')
             ChordPlotter(song).plot()
     else: 
         ChordPlotter(songTree).plot()
