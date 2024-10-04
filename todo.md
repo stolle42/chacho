@@ -1,0 +1,3 @@
+- Maybe dead-equal verses should not be represented
+- create both, single plots and a cumulative one
+- make a frontend
