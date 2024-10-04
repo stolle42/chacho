@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 from circleOfFifths import CircleOfFifths
 from songtree import Chord, Song
-from itertools import bat
+from itertools import batched
 
 
-def plotAll(songTree:Song, maxSection=20):
-    if len(songTree.sections)>maxSection:
-        for i in range(0, len(songTree.sections),maxSection):
+def plotAll(songTree:Song, maxSection=8):
+    if len(songTree.sections)>maxSection+2:
+        for i, sectionSlice in enumerate(batched(songTree.sections, maxSection)):
             song=Song(sectionSlice,songTree.key,f'{songTree.title}({i})')
             ChordPlotter(song).plot()
     else: 
