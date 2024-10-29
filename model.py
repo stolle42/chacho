@@ -20,6 +20,7 @@ class SongfileParser():
             self.songtext=cd.read()
         
     def _divideIntoSections(self ):
+        self.songtext=re.sub(r"\n\n([^{])",r"\n\g<1>",self.songtext)#remove double enter that do not indicate end of section
         pattern=re.compile(r"\{comment: ([\w &-]+)\}\n(.*?)\n\n",re.DOTALL)
         self.sections=pattern.findall(self.songtext)
     
