@@ -1,24 +1,27 @@
+from pathlib import Path
 import matplotlib.pyplot as plt
 from circleOfFifths import CircleOfFifths
 from songtree import Chord, Song
 from itertools import batched
 
 
-def plotAll(songTree:Song, maxSection=8):
-    if len(songTree.sections)>maxSection+2:
-        for i, sectionSlice in enumerate(batched(songTree.sections, maxSection)):
+def plotAll(songTree:Song, maxSections:int=8, outputDir='.'):
+    if len(songTree.sections)>maxSections+2:
+        for i, sectionSlice in enumerate(batched(songTree.sections, maxSections)):
             song=Song(sectionSlice,songTree.key,f'{songTree.title}({i+1})')
-            ChordPlotter(song).plot()
+            ChordPlotter(song,outputDir).plot()
     else: 
-        ChordPlotter(songTree).plot()
+        ChordPlotter(songTree,outputDir).plot()
         
 
 
 class ChordPlotter():
     """gets chords in tree-form and plots them"""
-    def __init__(self, songTree:Song):
+    def __init__(self, songTree:Song, outputDir):
         self.songTree:Song = songTree
         self.cof=CircleOfFifths(songTree.key)
+        self.outputDir=Path(outputDir)
+        assert self.outputDir.exists(),f"Folder {self.outputDir} not found!"
         
     def _visualizeChord(self, chord:Chord):
         if chord.major:
@@ -50,4 +53,4 @@ class ChordPlotter():
             ax.plot(distances, color=plotColor,zorder=1)
             ax.scatter(range(len(distances)),distances,c=colors,zorder=2)
         plt.tight_layout()
-        fig.savefig(self.songTree.title)
+        fig.savefig(self.outputDir/self.songTree.title)

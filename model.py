@@ -6,11 +6,7 @@ from pathlib import Path
 from circleOfFifths import CircleOfFifths
 from songtree import Chord, Section, Song
 
-'''
-TODO: chordproParser und ultimateParser die von songfileParser erben. alles spezifische auslagern.
-evtl. key nicht ablesen sondern chord durchschnitt berechnen (achtung bei 6/-6 ist natürlich nciht 0). Moll key?
-für ultimate parser evtl zeilen nur akzeptieren wenn er jedes wort parsen kann?
-'''   
+
 
 
 class SongfileParser():
